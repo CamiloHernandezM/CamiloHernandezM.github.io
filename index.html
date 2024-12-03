@@ -3,9 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
     <title>Página Camilo</title>
 </head>
 <body>
-    <p>Esta es una página en blanco</p>
+    <Header>
+        <nav>
+            <ul class="tabs">
+                <li><a href="#" data-tab="home" class="active">Home</a></li>
+                <li><a href="#" data-tab="about">Acerca de</a></li>
+                <li><a href="#" data-tab="projects">Proyectos</a></li>
+                <li><a href="#" data-tab="contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </Header>
+
+    <h2>Hola, bienvenidos</h2>
+    <p>Soy Camilo Hernández, desarrollador de software</p>
+
+    <main>
+        <section id ="home" class="tab-content-active"
+          <h1>Hola, bienvenidos</h1>
+        <section id="about" class="tab-content">
+          <h1>Acerca de</h1>
+          <p>Mi formación como psicólogo clínico, especializado en el enfoque sistémico, me ha permitido explorar la complejidad de los fenómenos humanos desde múltiples perspectivas. Durante años, me fascinó entender cómo las piezas individuales interactúan para crear sistemas dinámicos y complejos, una curiosidad que encontré reflejada en el mundo de la programación.
+
+            Al iniciar mi camino en la tecnología, descubrí una conexión inesperada: la mirada analítica y sistémica que había cultivado en psicología encajaba naturalmente con el pensamiento lógico y estructurado de las ciencias de la computación. Este descubrimiento se consolidó cuando completé el curso CS50: Introduction to Computer Science, impartido por la Universidad de Harvard, donde desarrollé mis primeros proyectos y profundicé en los fundamentos de la programación.
+            
+            Hoy en día, trabajo en Entel, una destacada empresa transnacional de telecomunicaciones, donde desarrollo APIs y sistemas de integración. Mi experiencia como psicólogo ha sido clave para destacar en este entorno, ayudándome a:
+            
+            Traducir conceptos complejos en lenguajes accesibles y efectivos.
+            Colaborar con equipos multidisciplinarios, entendiendo y adaptándome a distintas perspectivas.
+            Abordar problemas con una visión fenomenológica, que fomenta la curiosidad y la innovación constante.
+            Creo firmemente en la capacidad de integrar disciplinas para enriquecer nuestro enfoque y transformar lo complejo en soluciones prácticas. Siempre busco nuevas formas de aprender, sorprenderme y contribuir al desarrollo de sistemas que impacten positivamente en las personas.</p>
+        </section>
+        <section id="projects" class="tab-content">
+          <h1>Proyectos</h1>
+          <p>Descripción de proyectos.</p>
+        </section>
+        <section id="contact" class="tab-content">
+          <h1>Contacto</h1>
+          <p>Formulario o información de contacto.</p>
+        </section>
+      </main>
+
+    <Footer>
+        <hr>
+        <p>hola que tal</p>
+    </Footer>
+
 </body>
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tabs = document.querySelectorAll(".tabs a");
+  const contents = document.querySelectorAll(".tab-content");
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", (event) => {
+      event.preventDefault();
+
+      // Quitar la clase "active" de todas las pestañas y contenidos
+      tabs.forEach(t => t.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+
+      // Añadir la clase "active" a la pestaña y contenido seleccionados
+      tab.classList.add("active");
+      const target = tab.getAttribute("data-tab");
+      document.getElementById(target).classList.add("active");
+    });
+  });
+});
+
+</script>
 </html>
