@@ -1,0 +1,51 @@
+/* Estilos básicos del body */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+}
+
+/* Estilos de la card */
+.card {
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    width: 300px; /* Fija el ancho de la tarjeta */
+    text-align: center;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Efecto hover */
+.card:hover {
+    transform: scale(1);
+    box-shadow: 0 6px 15px rgba(0, 1, 1, 0.5);
+}
+
+/* Imagen dentro de la card */
+.card-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    border: solid grey 1px;
+}
+
+/* Título de la card */
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+/* Estado de la card */
+.card-status {
+    font-size: 1rem;
+    color: #666;
+}
