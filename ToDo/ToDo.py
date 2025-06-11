@@ -96,5 +96,14 @@ def update_task(task_id):
         conn.close()
         return jsonify({'success': True})
 
+@app.route('/shutdown', methods=['POST'])
+@requires_auth
+def shutdown():
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        return 'Not running with the Werkzeug Server', 500
+    func()
+    return 'Server shutting down...'
+
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0', port=5050)
