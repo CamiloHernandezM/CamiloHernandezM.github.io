@@ -1,10 +1,67 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
+import sqlite3
+import os
 
 app = Flask(__name__)
-@app.route('/')
+DB_PATH = os.path.join(os.path.dirname(__file__), 'todo.db')
 
+def get_db_connection():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+@app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/api/categories', methods=['GET', 'POST'])
+def categories():
+    conn = get_db_connection()
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data.get('name')
+        if not name:
+            return jsonify({'error': 'Category name required'}), 400
+        try:
+            conn.execute('INSERT INTO categories (name) VALUES (?)', (name,))
+            conn.commit()
+        except sqlite3.IntegrityError:
+            conn.close()
+            return jsonify({'error': 'Category already exists'}), 400
+        conn.close()
+        return jsonify({'success': True})
+    else:
+        categories = conn.execute('SELECT * FROM categories').fetchall()
+        conn.close()
+        return jsonify([dict(row) for row in categories])
+
+@app.route('/api/tasks', methods=['GET', 'POST'])
+def tasks():
+    conn = get_db_connection()
+    if request.method == 'POST':
+        data = request.get_json()
+        description = data.get('description')
+        category_id = data.get('category_id')
+        if not description or not category_id:
+            return jsonify({'error': 'Task description and category required'}), 400
+        conn.execute('INSERT INTO tasks (description, category_id) VALUES (?, ?)', (description, category_id))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
+    else:
+        tasks = conn.execute('SELECT * FROM tasks').fetchall()
+        conn.close()
+        return jsonify([dict(row) for row in tasks])
+
+@app.route('/api/tasks/<int:task_id>', methods=['PATCH'])
+def update_task(task_id):
+    conn = get_db_connection()
+    data = request.get_json()
+    completed = data.get('completed')
+    conn.execute('UPDATE tasks SET completed = ? WHERE id = ?', (int(bool(completed)), task_id))
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True})
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,11 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>ToDo Manager</title>
+    <style>
+        .completed-task span {
+            text-decoration: line-through dashed;
+            color: #888;
+        }
+    </style>
 </head>
 <body>
-    <h1>Este es un texto de título </h1>
+    <h1>ToDo Manager</h1>
+    <form id="category-form" style="margin-bottom: 1em;">
+        <input type="text" id="new-category-input" placeholder="Add new category" required>
+        <button type="submit">Add Category</button>
+    </form>
+    <form id="task-form">
+        <select id="category-select" required>
+            <option value="" disabled selected>Select category</option>
+            <option value="Work">Work</option>
+            <option value="Personal">Personal</option>
+            <option value="Shopping">Shopping</option>
+        </select>
+        <input type="text" id="task-input" placeholder="Add a new task" required>
+        <button type="submit">New Task</button>
+    </form>
+    <div id="categories-container"></div>
+    <script>
+        const form = document.getElementById('task-form');
+        const input = document.getElementById('task-input');
+        const categorySelect = document.getElementById('category-select');
+        const categoriesContainer = document.getElementById('categories-container');
+        const categoryForm = document.getElementById('category-form');
+        const newCategoryInput = document.getElementById('new-category-input');
+        const tasksByCategory = {};
+        const defaultCategories = ["Work", "Personal", "Shopping"];
 
-    
+        // Helper to add category to select
+        function addCategoryOption(category) {
+            if (![...categorySelect.options].some(opt => opt.value === category)) {
+                const option = document.createElement('option');
+                option.value = category;
+                option.textContent = category;
+                categorySelect.appendChild(option);
+            }
+        }
+
+        // Add default categories
+        defaultCategories.forEach(addCategoryOption);
+
+        categoryForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const newCategory = newCategoryInput.value.trim();
+            if (newCategory && ![...categorySelect.options].some(opt => opt.value === newCategory)) {
+                addCategoryOption(newCategory);
+                newCategoryInput.value = '';
+            }
+        });
+
+        function renderTasks() {
+            categoriesContainer.innerHTML = '';
+            Object.keys(tasksByCategory).forEach(category => {
+                const catDiv = document.createElement('div');
+                catDiv.innerHTML = `<h2>${category}</h2>`;
+                const ul = document.createElement('ul');
+                tasksByCategory[category].forEach((task, idx) => {
+                    const li = document.createElement('li');
+                    li.style.display = 'flex';
+                    li.style.alignItems = 'center';
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.style.marginRight = '8px';
+                    checkbox.addEventListener('change', function() {
+                        if (checkbox.checked) {
+                            li.classList.add('completed-task');
+                        } else {
+                            li.classList.remove('completed-task');
+                        }
+                    });
+                    li.appendChild(checkbox);
+                    const span = document.createElement('span');
+                    span.textContent = task;
+                    li.appendChild(span);
+                    ul.appendChild(li);
+                });
+                catDiv.appendChild(ul);
+                categoriesContainer.appendChild(catDiv);
+            });
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const task = input.value.trim();
+            const category = categorySelect.value;
+            if (task && category) {
+                if (!tasksByCategory[category]) {
+                    tasksByCategory[category] = [];
+                }
+                tasksByCategory[category].push(task);
+                input.value = '';
+                categorySelect.selectedIndex = 0;
+                renderTasks();
+            }
+        });
+    </script>
 </body>
 </html>
