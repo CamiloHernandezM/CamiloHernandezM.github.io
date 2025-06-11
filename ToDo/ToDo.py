@@ -1,9 +1,32 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
+from functools import wraps
 import sqlite3
 import os
 
 app = Flask(__name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), 'todo.db')
+
+# --- Simple HTTP Basic Auth ---
+USERNAME = os.environ.get('TODO_USERNAME')
+PASSWORD = os.environ.get('TODO_PASSWORD')
+
+def check_auth(username, password):
+    return username == USERNAME and password == PASSWORD
+
+def authenticate():
+    return Response(
+        'Authentication required', 401,
+        {'WWW-Authenticate': 'Basic realm="Login Required"'}
+    )
+
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if not auth or not check_auth(auth.username, auth.password):
+            return authenticate()
+        return f(*args, **kwargs)
+    return decorated
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)
@@ -11,10 +34,12 @@ def get_db_connection():
     return conn
 
 @app.route('/')
+@requires_auth
 def index():
     return render_template('index.html')
 
 @app.route('/api/categories', methods=['GET', 'POST'])
+@requires_auth
 def categories():
     conn = get_db_connection()
     if request.method == 'POST':
@@ -36,6 +61,7 @@ def categories():
         return jsonify([dict(row) for row in categories])
 
 @app.route('/api/tasks', methods=['GET', 'POST'])
+@requires_auth
 def tasks():
     conn = get_db_connection()
     if request.method == 'POST':
@@ -54,6 +80,7 @@ def tasks():
         return jsonify([dict(row) for row in tasks])
 
 @app.route('/api/tasks/<int:task_id>', methods=['PATCH', 'DELETE'])
+@requires_auth
 def update_task(task_id):
     conn = get_db_connection()
     if request.method == 'PATCH':
