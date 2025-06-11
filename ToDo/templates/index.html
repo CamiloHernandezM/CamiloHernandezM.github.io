@@ -9,6 +9,9 @@
             text-decoration: line-through dashed;
             color: #888;
         }
+        h2 {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -20,9 +23,6 @@
     <form id="task-form">
         <select id="category-select" required>
             <option value="" disabled selected>Select category</option>
-            <option value="Work">Work</option>
-            <option value="Personal">Personal</option>
-            <option value="Shopping">Shopping</option>
         </select>
         <input type="text" id="task-input" placeholder="Add a new task" required>
         <button type="submit">New Task</button>
@@ -35,76 +35,140 @@
         const categoriesContainer = document.getElementById('categories-container');
         const categoryForm = document.getElementById('category-form');
         const newCategoryInput = document.getElementById('new-category-input');
-        const tasksByCategory = {};
-        const defaultCategories = ["Work", "Personal", "Shopping"];
+        let categories = [];
+        let tasksByCategory = {};
 
-        // Helper to add category to select
-        function addCategoryOption(category) {
-            if (![...categorySelect.options].some(opt => opt.value === category)) {
+        // Fetch categories from backend
+        async function fetchCategories() {
+            const res = await fetch('/api/categories');
+            categories = await res.json();
+            categorySelect.innerHTML = '<option value="" disabled selected>Select category</option>';
+            categories.forEach(cat => {
                 const option = document.createElement('option');
-                option.value = category;
-                option.textContent = category;
+                option.value = cat.id;
+                option.textContent = cat.name;
                 categorySelect.appendChild(option);
-            }
+            });
         }
 
-        // Add default categories
-        defaultCategories.forEach(addCategoryOption);
+        // Fetch tasks from backend
+        async function fetchTasks() {
+            const res = await fetch('/api/tasks');
+            const tasks = await res.json();
+            tasksByCategory = {};
+            tasks.forEach(task => {
+                const catId = task.category_id;
+                const catName = categories.find(c => c.id === catId)?.name || 'Uncategorized';
+                if (!tasksByCategory[catName]) tasksByCategory[catName] = [];
+                tasksByCategory[catName].push({
+                    id: task.id,
+                    description: task.description,
+                    completed: !!task.completed
+                });
+            });
+            renderTasks();
+        }
 
-        categoryForm.addEventListener('submit', function(e) {
+        // Add new category
+        categoryForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const newCategory = newCategoryInput.value.trim();
-            if (newCategory && ![...categorySelect.options].some(opt => opt.value === newCategory)) {
-                addCategoryOption(newCategory);
+            const name = newCategoryInput.value.trim();
+            if (!name) return;
+            const res = await fetch('/api/categories', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            if (res.ok) {
                 newCategoryInput.value = '';
+                await fetchCategories();
+            } else {
+                alert('Category already exists or error occurred.');
             }
         });
 
+        // Add new task
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const description = input.value.trim();
+            const category_id = categorySelect.value;
+            if (!description || !category_id) return;
+            const res = await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description, category_id })
+            });
+            if (res.ok) {
+                input.value = '';
+                categorySelect.selectedIndex = 0;
+                await fetchTasks();
+            } else {
+                alert('Error adding task.');
+            }
+        });
+
+        // Delete a task
+        async function deleteTask(taskId) {
+            await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
+            await fetchTasks();
+        }
+
+        // Render tasks grouped by category
         function renderTasks() {
             categoriesContainer.innerHTML = '';
             Object.keys(tasksByCategory).forEach(category => {
                 const catDiv = document.createElement('div');
-                catDiv.innerHTML = `<h2>${category}</h2>`;
+                const header = document.createElement('h2');
+                header.textContent = category;
+                let collapsed = false;
                 const ul = document.createElement('ul');
-                tasksByCategory[category].forEach((task, idx) => {
+                ul.style.marginTop = '0.5em';
+                tasksByCategory[category].forEach(task => {
                     const li = document.createElement('li');
                     li.style.display = 'flex';
                     li.style.alignItems = 'center';
                     const checkbox = document.createElement('input');
                     checkbox.type = 'checkbox';
                     checkbox.style.marginRight = '8px';
-                    checkbox.addEventListener('change', function() {
-                        if (checkbox.checked) {
-                            li.classList.add('completed-task');
-                        } else {
-                            li.classList.remove('completed-task');
-                        }
+                    checkbox.checked = task.completed;
+                    checkbox.addEventListener('change', async function() {
+                        await fetch(`/api/tasks/${task.id}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ completed: checkbox.checked })
+                        });
+                        await fetchTasks();
                     });
                     li.appendChild(checkbox);
                     const span = document.createElement('span');
-                    span.textContent = task;
+                    span.textContent = task.description;
                     li.appendChild(span);
+                    if (task.completed) li.classList.add('completed-task');
+                    // Delete button
+                    const delBtn = document.createElement('button');
+                    delBtn.textContent = '🗑️';
+                    delBtn.title = 'Delete task';
+                    delBtn.style.marginLeft = 'auto';
+                    delBtn.onclick = () => deleteTask(task.id);
+                    li.appendChild(delBtn);
                     ul.appendChild(li);
                 });
+                // Collapse/expand logic
+                header.addEventListener('click', function() {
+                    collapsed = !collapsed;
+                    ul.style.display = collapsed ? 'none' : '';
+                });
+                catDiv.appendChild(header);
                 catDiv.appendChild(ul);
                 categoriesContainer.appendChild(catDiv);
             });
         }
 
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const task = input.value.trim();
-            const category = categorySelect.value;
-            if (task && category) {
-                if (!tasksByCategory[category]) {
-                    tasksByCategory[category] = [];
-                }
-                tasksByCategory[category].push(task);
-                input.value = '';
-                categorySelect.selectedIndex = 0;
-                renderTasks();
-            }
-        });
+        // Initial load
+        (async function() {
+            await fetchCategories();
+            await fetchTasks();
+        })();
     </script>
 </body>
 </html>

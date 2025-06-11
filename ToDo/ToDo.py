@@ -53,15 +53,21 @@ def tasks():
         conn.close()
         return jsonify([dict(row) for row in tasks])
 
-@app.route('/api/tasks/<int:task_id>', methods=['PATCH'])
+@app.route('/api/tasks/<int:task_id>', methods=['PATCH', 'DELETE'])
 def update_task(task_id):
     conn = get_db_connection()
-    data = request.get_json()
-    completed = data.get('completed')
-    conn.execute('UPDATE tasks SET completed = ? WHERE id = ?', (int(bool(completed)), task_id))
-    conn.commit()
-    conn.close()
-    return jsonify({'success': True})
+    if request.method == 'PATCH':
+        data = request.get_json()
+        completed = data.get('completed')
+        conn.execute('UPDATE tasks SET completed = ? WHERE id = ?', (int(bool(completed)), task_id))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
+    elif request.method == 'DELETE':
+        conn.execute('DELETE FROM tasks WHERE id = ?', (task_id,))
+        conn.commit()
+        conn.close()
+        return jsonify({'success': True})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
