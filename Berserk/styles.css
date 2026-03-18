@@ -135,11 +135,13 @@ h1 {
 }
 
 .card.owned {
-  border-color: #2e4a2e;
+  border-color: var(--owned-fg);
+  box-shadow: 0 0 8px rgba(109, 191, 109, 0.2);
 }
 
 .card.wishlist {
-  border-color: #1e2e4a;
+  border-color: var(--wish-fg);
+  box-shadow: 0 0 8px rgba(109, 155, 191, 0.2);
   opacity: 0.8;
 }
 
