@@ -1,16 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>Berserk Collection</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berserk — Mi Colección</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="card">
-        <p class="card-title">Tomo Número 1</p>
-        <img class="card-image" src="https://d14d9vp3wdof84.cloudfront.net/image/589816272436/image_vl6ol87q9t50b02gnnv4b92759/-S300-FWEBP" alt="Berserk Tomo 1">
-        <p class="card-status">En colección</p>
+
+  <header>
+    <h1>BERSERK</h1>
+    <p class="subtitle">Mi Colección</p>
+    <div class="stats-bar">
+      <span class="stat" id="stat-owned">0 en colección</span>
+      <span class="stat-divider">·</span>
+      <span class="stat" id="stat-wishlist">0 en wishlist</span>
+      <span class="stat-divider">·</span>
+      <span class="stat" id="stat-total">0 tomos</span>
     </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="normal">Tomos Normales</button>
+    <button class="tab-btn" data-tab="deluxe">Edición Deluxe</button>
+  </div>
+
+  <nav class="filters">
+    <button class="filter-btn active" data-filter="all">Todos</button>
+    <button class="filter-btn" data-filter="owned">En colección</button>
+    <button class="filter-btn" data-filter="wishlist">Wishlist</button>
+    <button class="filter-btn" data-filter="missing">Aún sin obtener</button>
+  </nav>
+
+  <main>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <p class="hint">Haz clic en una tarjeta para cambiar su estado</p>
+
+  <script src="data.js"></script>
+  <script src="scripts.js"></script>
 </body>
 </html>

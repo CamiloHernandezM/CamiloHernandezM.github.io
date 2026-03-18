@@ -1,51 +1,274 @@
-/* Estilos básicos del body */
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0e0c0b;
+  --surface:   #1a1714;
+  --border:    #2e2a26;
+  --gold:      #c9a84c;
+  --gold-dim:  #7a6230;
+  --text:      #e8e0d0;
+  --muted:     #6b6358;
+  --owned-bg:  #1a2e1a;
+  --owned-fg:  #6dbf6d;
+  --wish-bg:   #1a1f2e;
+  --wish-fg:   #6d9bbf;
+  --missing-bg:#1a1714;
+  --missing-fg:#6b6358;
+  --radius:    12px;
+}
+
 body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Crimson Text', Georgia, serif;
+  min-height: 100vh;
+  padding-bottom: 3rem;
 }
 
-/* Estilos de la card */
+/* ── Header ── */
+header {
+  text-align: center;
+  padding: 3rem 1rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  font-weight: 900;
+  letter-spacing: 0.25em;
+  color: var(--gold);
+  text-shadow: 0 0 40px rgba(201, 168, 76, 0.3);
+  line-height: 1;
+}
+
+.subtitle {
+  font-family: 'Crimson Text', serif;
+  font-style: italic;
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-top: 0.4rem;
+  letter-spacing: 0.1em;
+}
+
+.stats-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.stat {
+  font-size: 0.85rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+
+.stat-divider {
+  color: var(--border);
+}
+
+/* ── Filters ── */
+.filters {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1rem 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  font-family: 'Crimson Text', serif;
+  font-size: 0.95rem;
+  padding: 6px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.04em;
+}
+
+.filter-btn:hover {
+  border-color: var(--gold-dim);
+  color: var(--text);
+}
+
+.filter-btn.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.08);
+}
+
+/* ── Grid ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 16px;
+  padding: 0 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Card ── */
 .card {
-    background-color: white;
-    border: 2px solid black;
-    border-radius: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    width: 300px; /* Fija el ancho de la tarjeta */
-    text-align: center;
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Efecto hover */
 .card:hover {
-    transform: scale(1);
-    box-shadow: 0 6px 15px rgba(0, 1, 1, 0.5);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border-color: var(--gold-dim);
 }
 
-/* Imagen dentro de la card */
+.card.owned {
+  border-color: #2e4a2e;
+}
+
+.card.wishlist {
+  border-color: #1e2e4a;
+  opacity: 0.8;
+}
+
+.card.missing {
+  opacity: 0.35;
+  filter: grayscale(0.6);
+}
+
 .card-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 10px;
-    margin-bottom: 15px;
-    border: solid grey 1px;
+  width: 100%;
+  aspect-ratio: 2/3;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  display: block;
+  margin-bottom: 10px;
+  background: var(--bg);
 }
 
-/* Título de la card */
+.card-num {
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  margin-bottom: 3px;
+}
+
 .card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #333;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
 }
 
-/* Estado de la card */
-.card-status {
-    font-size: 1rem;
-    color: #666;
+/* ── Status badge ── */
+.badge {
+  display: inline-block;
+  font-size: 0.68rem;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-family: 'Crimson Text', serif;
+  letter-spacing: 0.04em;
+}
+
+.badge-owned   { background: var(--owned-bg);   color: var(--owned-fg); }
+.badge-wishlist{ background: var(--wish-bg);    color: var(--wish-fg); }
+.badge-missing { background: var(--missing-bg); color: var(--missing-fg); }
+
+/* ── Hint ── */
+.hint {
+  text-align: center;
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-top: 2.5rem;
+  opacity: 0.6;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 12px;
+    padding: 0 1rem;
+  }
+}
+
+/* ── Tabs ── */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  padding: 0 1rem 0;
+  margin-bottom: 1rem;
+}
+
+.tab-btn {
+  font-family: 'Cinzel', serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  padding: 8px 24px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:first-child {
+  border-radius: 6px 0 0 6px;
+}
+
+.tab-btn:last-child {
+  border-radius: 0 6px 6px 0;
+  border-left: none;
+}
+
+.tab-btn.active {
+  background: rgba(201, 168, 76, 0.1);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.tab-btn:hover:not(.active) {
+  color: var(--text);
+  border-color: var(--gold-dim);
+}
+
+/* ── Deluxe card ── */
+.card.deluxe {
+  border-color: var(--gold-dim);
+}
+
+.card.deluxe.owned {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.15);
+}
+
+.deluxe-ribbon {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  font-family: 'Cinzel', serif;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  background: rgba(201, 168, 76, 0.1);
+  border: 1px solid var(--gold-dim);
+  padding: 2px 6px;
+  border-radius: 3px;
 }
