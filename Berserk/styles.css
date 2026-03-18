@@ -135,8 +135,8 @@ h1 {
 }
 
 .card.owned {
-  border-color: var(--owned-fg);
-  box-shadow: 0 0 8px rgba(109, 191, 109, 0.2);
+  border-color: var(--gold);
+  box-shadow: 0 0 12px rgba(201, 168, 76, 0.15);
 }
 
 .card.wishlist {
